@@ -1,0 +1,9 @@
+# Redundant zip archives
+*.zip.zip
+clip 2 frame.zip/*.zip.zip
+
+# Temporary files
+k2
+.DS_Store
+Thumbs.db
+
