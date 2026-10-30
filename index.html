@@ -2,616 +2,447 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NOCTIS // Unbadged Electric Grand Tourer</title>
-  <meta name="description" content="NOCTIS — A fictional, unbadged, low-slung electric grand tourer coupe in matte graphite grey. Sculpted in darkness. Powered by pure light." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>NOCTIS // Electric Grand Tourer</title>
+  <meta name="description" content="A city in total blackout at night where the car's light is the only light in the world. NOCTIS — unbadged, quiet, expensive, precise." />
+
+  <!-- Google Fonts: Archivo (expanded width 125%), Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@125,300..400&family=Inter:wght@400&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body class="theme-noctis">
+<body class="no-scroll">
 
-  <!-- BACKGROUND AMBIENT GLOWS -->
-  <div class="ambient-glow glow-red"></div>
-  <div class="ambient-glow glow-white"></div>
-  <div class="film-grain-overlay"></div>
+  <!-- FIXED FILM-GRAIN OVERLAY CANVAS -->
+  <canvas id="grain-canvas" class="grain-overlay" aria-hidden="true"></canvas>
 
-  <!-- NAVIGATION HEADER -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="brand-block">
-        <span class="brand-logo">N O C T I S</span>
-        <span class="brand-tag">GT // 01</span>
-        <div class="live-status">
-          <span class="status-dot"></span>
-          <span class="status-label">800V ACTIVE</span>
-        </div>
+  <!-- CUSTOM CURSOR ("THE HEADLIGHT") -->
+  <div id="custom-cursor" class="custom-cursor" aria-hidden="true">
+    <div class="cursor-dot"></div>
+    <div class="cursor-ring"></div>
+    <div class="cursor-bar"></div>
+    <div class="cursor-label"></div>
+  </div>
+
+  <!-- PRELOADER -->
+  <div id="preloader" class="preloader" aria-live="polite">
+    <div class="preloader-content">
+      <div class="preloader-brand">NOCTIS</div>
+      <div class="preloader-track">
+        <div id="preloader-bar" class="preloader-bar"></div>
       </div>
-
-      <nav class="nav-links">
-        <a href="#hero-experience" class="nav-link active">THE JOURNEY</a>
-        <a href="#deconstruction" class="nav-link">DECONSTRUCTION</a>
-        <a href="#design-lock" class="nav-link">DESIGN LOCK</a>
-        <a href="#telemetry" class="nav-link">TELEMETRY</a>
-      </nav>
-
-      <div class="header-actions">
-        <!-- Web Audio Synthesizer Toggle -->
-        <button id="sound-toggle-btn" class="ctrl-btn sound-btn" title="Toggle Procedural Audio Soundscape">
-          <svg class="sound-icon icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-            <line x1="23" y1="9" x2="17" y2="15"/>
-            <line x1="17" y1="9" x2="23" y2="15"/>
-          </svg>
-          <svg class="sound-icon icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
-            <path d="M11 5L6 9H2v6h4l5 4V5z"/>
-            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
-            <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-          </svg>
-          <span class="btn-text">SOUND: OFF</span>
-        </button>
-
-        <button id="inquire-btn" class="action-btn-primary">
-          <span>ALLOCATION</span>
-        </button>
-      </div>
+      <div id="preloader-counter" class="preloader-counter">000</div>
     </div>
+  </div>
+
+  <!-- FIXED NAVIGATION -->
+  <header id="site-nav" class="site-nav">
+    <a href="#" class="nav-brand" data-cursor="MENU">NOCTIS</a>
+    <nav class="nav-links">
+      <a href="#lineup" class="nav-link" data-cursor="VIEW">MODELS</a>
+      <a href="#dismantle" class="nav-link" data-cursor="VIEW">TECHNOLOGY</a>
+      <a href="#reserve" class="nav-link" data-cursor="RESERVE">RESERVE</a>
+    </nav>
   </header>
 
-  <main>
-    <!-- HERO INTRO -->
-    <section class="hero-intro">
-      <div class="container hero-intro-content">
-        <div class="intro-eyebrow">
-          <span class="led-indicator red-led"></span>
-          <span>UNBADGED • LOW-SLUNG • ELECTRIC GT COUPE</span>
-          <span class="led-indicator white-led"></span>
+  <main id="main-content">
+
+    <!-- ====================================================================
+         SECTION 1: HERO (PINNED SCROLLYTELLING)
+         ==================================================================== -->
+    <section id="hero" class="pinned-wrapper hero-wrapper">
+      <div class="sticky-stage">
+        
+        <!-- CANVAS DISPLAY -->
+        <canvas id="hero-canvas" class="scrolly-canvas"></canvas>
+
+        <!-- CANVAS SOLID BLACK FADE OVERLAY -->
+        <div id="hero-fade-overlay" class="hero-fade-overlay"></div>
+
+        <!-- LEFT-EDGE TELEMETRY HUD -->
+        <div class="hero-hud" aria-hidden="true">
+          <div class="hud-item hud-chapter">
+            <span class="hud-tick"></span>
+            <span id="hud-chapter-text" class="hud-mono">01/04</span>
+          </div>
+          <div class="hud-item hud-telemetry">
+            <div class="hud-row">
+              <span class="hud-label">SPEED</span>
+              <span id="hud-speed" class="hud-mono">000 KM/H</span>
+            </div>
+            <div class="hud-row">
+              <span class="hud-label">DIST</span>
+              <span id="hud-dist" class="hud-mono">0.0 KM</span>
+            </div>
+          </div>
         </div>
-        <h1 class="hero-title">NOCTIS</h1>
-        <p class="hero-subtitle">
-          Sculpted in matte graphite grey. Void of emblems. Defined exclusively by dual razor-thin light bars cutting through total metropolis blackout.
+
+        <!-- FLOATING TEXT CHAPTERS IN SKY -->
+        <div class="hero-text-container">
+          
+          <!-- Chapter 1 (0.00 – 0.15) -->
+          <div class="hero-chapter chapter-1 active" data-chapter="1">
+            <div class="reveal-mask">
+              <h1 class="hero-title reveal-line">NOCTIS</h1>
+            </div>
+            <div class="reveal-mask">
+              <p class="hero-subline reveal-line">The city is asleep.</p>
+            </div>
+            <div class="hero-hint-wrapper reveal-mask">
+              <div class="hero-scroll-hint reveal-line">
+                <span class="hint-text">SCROLL TO WAKE IT</span>
+                <span class="hint-line"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chapter 2 (0.22 – 0.40) -->
+          <div class="hero-chapter chapter-2" data-chapter="2">
+            <div class="reveal-mask">
+              <h2 class="chapter-statement reveal-line">It doesn't need the city's light.</h2>
+            </div>
+          </div>
+
+          <!-- Chapter 3 (0.50 – 0.68) -->
+          <div class="hero-chapter chapter-3" data-chapter="3">
+            <div class="reveal-mask">
+              <h2 class="chapter-statement reveal-line">It brings its own.</h2>
+            </div>
+          </div>
+
+          <!-- Chapter 4 (0.80 – 1.00) -->
+          <div class="hero-chapter chapter-4" data-chapter="4">
+            <div class="reveal-mask">
+              <h2 class="chapter-model-title reveal-line">GT-E</h2>
+            </div>
+            <div class="reveal-mask">
+              <p class="chapter-specs reveal-line">0–100 KM/H 3.1S · 640 KM RANGE · DUAL MOTOR</p>
+            </div>
+            <div class="reveal-mask">
+              <a href="#lineup" class="chapter-link reveal-line" data-cursor="VIEW">Discover the GT-E →</a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 1PX XENON SCROLL PROGRESS LINE -->
+        <div id="hero-progress-line" class="pinned-progress-line"></div>
+
+        <!-- ACCESSIBILITY FALLBACK (Reduced Motion) -->
+        <div class="reduced-motion-fallback hero-static">
+          <img src="assets/frames/hero/frame_0001.webp" alt="NOCTIS parked at blackout city edge" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 2: STATEMENT (WORD-BY-WORD SCROLL REVEAL)
+         ==================================================================== -->
+    <section id="statement" class="statement-section">
+      <div class="statement-container">
+        <span class="section-label">02 — ENGINEERING</span>
+        <h2 id="statement-text" class="statement-quote">
+          <!-- Populated by JS for scroll opacity reveal -->
+          Every part was designed to disappear into one line of light.
+        </h2>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 3: DISMANTLE (PINNED 4D DECONSTRUCTION)
+         ==================================================================== -->
+    <section id="dismantle" class="pinned-wrapper dismantle-wrapper">
+      <div class="sticky-stage">
+        
+        <!-- DISMANTLE CANVAS -->
+        <canvas id="dismantle-canvas" class="scrolly-canvas"></canvas>
+
+        <!-- TOP-LEFT SECTION TITLE -->
+        <div class="dismantle-title-block">
+          <span class="section-label">02.1 — ARCHITECTURE</span>
+          <h2 class="dismantle-heading">Look closer.</h2>
+        </div>
+
+        <!-- INTERACTIVE CALLOUTS OVERLAY (APPEARS AFTER 70% PROGRESS) -->
+        <div id="dismantle-callouts" class="dismantle-callouts-layer" aria-hidden="true">
+          
+          <!-- BODY -->
+          <div class="callout-node" id="callout-body" style="left: 48%; top: 28%;">
+            <div class="callout-dot"></div>
+            <svg class="callout-line-svg" width="160" height="80">
+              <line x1="0" y1="80" x2="160" y2="0" class="hairline-stroke" />
+            </svg>
+            <div class="callout-info" style="left: 170px; top: -10px;">
+              <span class="callout-title">BODY</span>
+              <span class="callout-desc">Carbon composite monocoque</span>
+            </div>
+          </div>
+
+          <!-- LIGHT -->
+          <div class="callout-node" id="callout-light" style="left: 24%; top: 48%;">
+            <div class="callout-dot"></div>
+            <svg class="callout-line-svg line-left" width="160" height="80">
+              <line x1="160" y1="80" x2="0" y2="0" class="hairline-stroke" />
+            </svg>
+            <div class="callout-info info-left" style="right: 170px; top: -10px;">
+              <span class="callout-title">LIGHT</span>
+              <span class="callout-desc">Single-line LED signature</span>
+            </div>
+          </div>
+
+          <!-- DRIVE -->
+          <div class="callout-node" id="callout-drive" style="left: 74%; top: 60%;">
+            <div class="callout-dot"></div>
+            <svg class="callout-line-svg" width="140" height="70">
+              <line x1="0" y1="70" x2="140" y2="0" class="hairline-stroke" />
+            </svg>
+            <div class="callout-info" style="left: 150px; top: -10px;">
+              <span class="callout-title">DRIVE</span>
+              <span class="callout-desc">Dual axial-flux motors, 680 kW</span>
+            </div>
+          </div>
+
+          <!-- BATTERY -->
+          <div class="callout-node" id="callout-battery" style="left: 52%; top: 72%;">
+            <div class="callout-dot"></div>
+            <svg class="callout-line-svg" width="150" height="80">
+              <line x1="0" y1="0" x2="150" y2="80" class="hairline-stroke" />
+            </svg>
+            <div class="callout-info" style="left: 160px; top: 70px;">
+              <span class="callout-title">BATTERY</span>
+              <span class="callout-desc">110 kWh structural pack</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 1PX XENON SCROLL PROGRESS LINE -->
+        <div id="dismantle-progress-line" class="pinned-progress-line"></div>
+
+        <!-- ACCESSIBILITY FALLBACK -->
+        <div class="reduced-motion-fallback dismantle-static">
+          <img src="assets/frames/dismantle/frame_0001.webp" alt="NOCTIS engineering chassis" />
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 4: LINEUP (HOVER ACCORDION)
+         ==================================================================== -->
+    <section id="lineup" class="lineup-section">
+      <div class="lineup-header">
+        <span class="section-label">03 — THE LINEUP</span>
+        <h2 class="lineup-headline">Five ways to drive the night.</h2>
+      </div>
+
+      <!-- 5-SLIDE ACCORDION CONTAINER -->
+      <div id="lineup-accordion" class="lineup-accordion" role="region" aria-label="NOCTIS Model Lineup">
+        
+        <!-- SLIDE 01: GT-E (OPEN BY DEFAULT) -->
+        <div class="lineup-slide is-open" data-index="0" data-model="gte" tabindex="0" role="button" aria-expanded="true" aria-label="NOCTIS GT-E">
+          <div class="slide-closed-view">
+            <span class="slide-num">01</span>
+            <span class="slide-name-rotated">GT-E</span>
+            <div class="slide-crop-preview">
+              <img src="assets/cars/gt-e.webp" alt="" class="crop-img" loading="lazy" />
+            </div>
+          </div>
+          <div class="slide-open-view">
+            <div class="open-header">
+              <span class="open-num">01</span>
+              <h3 class="open-model-name">GT-E</h3>
+            </div>
+            <div class="open-image-stage">
+              <img src="assets/cars/gt-e.webp" alt="NOCTIS GT-E side profile in matte graphite" class="open-car-img" loading="lazy" />
+            </div>
+            <div class="open-details">
+              <p class="open-tagline">The grand tourer.</p>
+              <div class="open-specs-row">
+                <div class="spec-col"><span class="spec-lbl">RANGE</span><span class="spec-val">640 km</span></div>
+                <div class="spec-col"><span class="spec-lbl">0–100 KM/H</span><span class="spec-val">3.1 s</span></div>
+                <div class="spec-col"><span class="spec-lbl">POWER</span><span class="spec-val">680 kW</span></div>
+              </div>
+              <div class="open-footer-row">
+                <div class="swatches-row" aria-label="Color options">
+                  <span class="swatch active" style="background-color: #121418;" title="Matte Graphite"></span>
+                  <span class="swatch" style="background-color: #EDEAE4;" title="Bone White"></span>
+                  <span class="swatch" style="background-color: #1A2430;" title="Nocturne Blue"></span>
+                  <span class="swatch" style="background-color: #7A1412;" title="Crimson Obsidian"></span>
+                </div>
+                <a href="#reserve" class="open-configure-link" data-cursor="CONFIGURE">Configure →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 02: S -->
+        <div class="lineup-slide" data-index="1" data-model="s" tabindex="0" role="button" aria-expanded="false" aria-label="NOCTIS S">
+          <div class="slide-closed-view">
+            <span class="slide-num">02</span>
+            <span class="slide-name-rotated">S</span>
+            <div class="slide-crop-preview">
+              <img src="assets/cars/s.webp" alt="" class="crop-img" loading="lazy" />
+            </div>
+          </div>
+          <div class="slide-open-view">
+            <div class="open-header">
+              <span class="open-num">02</span>
+              <h3 class="open-model-name">S</h3>
+            </div>
+            <div class="open-image-stage">
+              <img src="assets/cars/s.webp" alt="NOCTIS S four-door sport sedan side profile" class="open-car-img" loading="lazy" />
+            </div>
+            <div class="open-details">
+              <p class="open-tagline">Four doors, no compromise.</p>
+              <div class="open-specs-row">
+                <div class="spec-col"><span class="spec-lbl">RANGE</span><span class="spec-val">600 km</span></div>
+                <div class="spec-col"><span class="spec-lbl">0–100 KM/H</span><span class="spec-val">3.6 s</span></div>
+                <div class="spec-col"><span class="spec-lbl">POWER</span><span class="spec-val">520 kW</span></div>
+              </div>
+              <div class="open-footer-row">
+                <div class="swatches-row" aria-label="Color options">
+                  <span class="swatch active" style="background-color: #EDEAE4;" title="Satin Bone White"></span>
+                  <span class="swatch" style="background-color: #121418;" title="Matte Graphite"></span>
+                  <span class="swatch" style="background-color: #2C3238;" title="Titanium Shadow"></span>
+                  <span class="swatch" style="background-color: #1C2630;" title="Deep Navy"></span>
+                </div>
+                <a href="#reserve" class="open-configure-link" data-cursor="CONFIGURE">Configure →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 03: X -->
+        <div class="lineup-slide" data-index="2" data-model="x" tabindex="0" role="button" aria-expanded="false" aria-label="NOCTIS X">
+          <div class="slide-closed-view">
+            <span class="slide-num">03</span>
+            <span class="slide-name-rotated">X</span>
+            <div class="slide-crop-preview">
+              <img src="assets/cars/x.webp" alt="" class="crop-img" loading="lazy" />
+            </div>
+          </div>
+          <div class="slide-open-view">
+            <div class="open-header">
+              <span class="open-num">03</span>
+              <h3 class="open-model-name">X</h3>
+            </div>
+            <div class="open-image-stage">
+              <img src="assets/cars/x.webp" alt="NOCTIS X coupe SUV side profile" class="open-car-img" loading="lazy" />
+            </div>
+            <div class="open-details">
+              <p class="open-tagline">Higher, never heavier.</p>
+              <div class="open-specs-row">
+                <div class="spec-col"><span class="spec-lbl">RANGE</span><span class="spec-val">560 km</span></div>
+                <div class="spec-col"><span class="spec-lbl">0–100 KM/H</span><span class="spec-val">4.2 s</span></div>
+                <div class="spec-col"><span class="spec-lbl">POWER</span><span class="spec-val">480 kW</span></div>
+              </div>
+              <div class="open-footer-row">
+                <div class="swatches-row" aria-label="Color options">
+                  <span class="swatch active" style="background-color: #182A3A;" title="Midnight Blue"></span>
+                  <span class="swatch" style="background-color: #121418;" title="Matte Graphite"></span>
+                  <span class="swatch" style="background-color: #EDEAE4;" title="Bone White"></span>
+                  <span class="swatch" style="background-color: #3E4650;" title="Slate"></span>
+                </div>
+                <a href="#reserve" class="open-configure-link" data-cursor="CONFIGURE">Configure →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 04: R -->
+        <div class="lineup-slide" data-index="3" data-model="r" tabindex="0" role="button" aria-expanded="false" aria-label="NOCTIS R">
+          <div class="slide-closed-view">
+            <span class="slide-num">04</span>
+            <span class="slide-name-rotated">R</span>
+            <div class="slide-crop-preview">
+              <img src="assets/cars/r.webp" alt="" class="crop-img" loading="lazy" />
+            </div>
+          </div>
+          <div class="slide-open-view">
+            <div class="open-header">
+              <span class="open-num">04</span>
+              <h3 class="open-model-name">R</h3>
+            </div>
+            <div class="open-image-stage">
+              <img src="assets/cars/r.webp" alt="NOCTIS R track coupe side profile" class="open-car-img" loading="lazy" />
+            </div>
+            <div class="open-details">
+              <p class="open-tagline">Built for the track.</p>
+              <div class="open-specs-row">
+                <div class="spec-col"><span class="spec-lbl">RANGE</span><span class="spec-val">420 km</span></div>
+                <div class="spec-col"><span class="spec-lbl">0–100 KM/H</span><span class="spec-val">2.4 s</span></div>
+                <div class="spec-col"><span class="spec-lbl">POWER</span><span class="spec-val">900 kW</span></div>
+              </div>
+              <div class="open-footer-row">
+                <div class="swatches-row" aria-label="Color options">
+                  <span class="swatch active" style="background-color: #0E1012;" title="Satin Black"></span>
+                  <span class="swatch" style="background-color: #E1251B;" title="Taillight Red"></span>
+                  <span class="swatch" style="background-color: #3E4650;" title="Carbon Weave"></span>
+                  <span class="swatch" style="background-color: #EDEAE4;" title="Bone White"></span>
+                </div>
+                <a href="#reserve" class="open-configure-link" data-cursor="CONFIGURE">Configure →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SLIDE 05: ONE -->
+        <div class="lineup-slide" data-index="4" data-model="one" tabindex="0" role="button" aria-expanded="false" aria-label="NOCTIS ONE">
+          <div class="slide-closed-view">
+            <span class="slide-num">05</span>
+            <span class="slide-name-rotated">ONE</span>
+            <div class="slide-crop-preview">
+              <img src="assets/cars/one.webp" alt="" class="crop-img" loading="lazy" />
+            </div>
+          </div>
+          <div class="slide-open-view">
+            <div class="open-header">
+              <span class="open-num">05</span>
+              <h3 class="open-model-name">ONE</h3>
+            </div>
+            <div class="open-image-stage">
+              <img src="assets/cars/one.webp" alt="NOCTIS ONE concept hypercar side profile" class="open-car-img" loading="lazy" />
+            </div>
+            <div class="open-details">
+              <p class="open-tagline">The future, early.</p>
+              <div class="open-specs-row">
+                <div class="spec-col"><span class="spec-lbl">STATUS</span><span class="spec-val">Concept</span></div>
+                <div class="spec-col"><span class="spec-lbl">0–100 KM/H</span><span class="spec-val">&lt; 2.0 s</span></div>
+                <div class="spec-col"><span class="spec-lbl">PLATFORM</span><span class="spec-val">Solid State</span></div>
+              </div>
+              <div class="open-footer-row">
+                <div class="swatches-row" aria-label="Color options">
+                  <span class="swatch active" style="background-color: #C8D2DC;" title="Liquid Silver"></span>
+                  <span class="swatch" style="background-color: #121418;" title="Matte Graphite"></span>
+                  <span class="swatch" style="background-color: #202428;" title="Dark Titanium"></span>
+                  <span class="swatch" style="background-color: #8A8F98;" title="Fog Grey"></span>
+                </div>
+                <a href="#reserve" class="open-configure-link" data-cursor="CONFIGURE">Configure →</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 5: RESERVE
+         ==================================================================== -->
+    <section id="reserve" class="reserve-section">
+      <div class="reserve-content">
+        <h2 class="reserve-headline">Drive the night.</h2>
+        <p class="reserve-body">
+          Allocation for the 2026 production cycle is strictly limited.
         </p>
-
-        <!-- TOP KEY METRICS HUD -->
-        <div class="hero-telemetry-strip">
-          <div class="strip-item">
-            <span class="item-value">1,500 <small>HP</small></span>
-            <span class="item-label">DUAL MOTOR AWD</span>
-          </div>
-          <div class="strip-divider"></div>
-          <div class="strip-item">
-            <span class="item-value">1.98 <small>S</small></span>
-            <span class="item-label">0–100 KM/H</span>
-          </div>
-          <div class="strip-divider"></div>
-          <div class="strip-item">
-            <span class="item-value">780 <small>KM</small></span>
-            <span class="item-label">SOLID-STATE RANGE</span>
-          </div>
-          <div class="strip-divider"></div>
-          <div class="strip-item">
-            <span class="item-value">0.19 <small>Cd</small></span>
-            <span class="item-label">AERODYNAMIC PROFILE</span>
-          </div>
-        </div>
-
-        <div class="scroll-cue">
-          <span class="scroll-label">EXPLORE CINEMATIC JOURNEY</span>
-          <div class="scroll-arrow"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SECTION 1: CINEMATIC JOURNEY SHOWCASE -->
-    <section id="hero-experience" class="cinematic-section">
-      <div class="container-fluid cinema-container">
-        
-        <!-- SECTION TITLE & CONTROLS -->
-        <div class="cinema-header-panel">
-          <div class="cinema-title-block">
-            <div class="section-tag">CINEMATIC SEQUENCE // 16:9 ANAMORPHIC</div>
-            <h2 class="cinema-heading">THE NIGHT CHRONICLES</h2>
-            <p class="cinema-sub">Traverse the nocturnal awakening across four seamless photographic keyframes & motion sequences.</p>
-          </div>
-
-          <!-- PLAYBACK MODE SWITCHER -->
-          <div class="mode-switcher-group">
-            <button id="mode-canvas-btn" class="mode-btn active" title="Interactive Frame-by-Frame Scrubbing">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="9"/>
-                <path d="M12 7v5l3 3"/>
-              </svg>
-              <span>FRAME SCRUBBER</span>
-            </button>
-            <button id="mode-video-btn" class="mode-btn" title="Continuous Realtime Video Playback">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="5 3 19 12 5 21 5 3"/>
-              </svg>
-              <span>4K FILM MODE</span>
-            </button>
-            <button id="fullscreen-btn" class="ctrl-btn icon-only" title="Toggle Fullscreen Theater">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- CHAPTER NAV TABS -->
-        <div class="chapter-nav-bar">
-          <button class="chapter-tab active" data-chapter="1">
-            <span class="ch-idx">01</span>
-            <span class="ch-name">THE WAKE</span>
-            <span class="ch-desc">Motionless in Blackout</span>
-          </button>
-          <button class="chapter-tab" data-chapter="2">
-            <span class="ch-idx">02</span>
-            <span class="ch-name">THE DEPARTURE</span>
-            <span class="ch-desc">Avenue Acceleration</span>
-          </button>
-          <button class="chapter-tab" data-chapter="3">
-            <span class="ch-idx">03</span>
-            <span class="ch-name">THE CORRIDOR</span>
-            <span class="ch-desc">Skyscraper Reflections</span>
-          </button>
-          <button class="chapter-tab" data-chapter="4">
-            <span class="ch-idx">04</span>
-            <span class="ch-name">THE OVERLOOK</span>
-            <span class="ch-desc">Skyline Bridge Profile</span>
-          </button>
-        </div>
-
-        <!-- MAIN VIEWPORT STAGE -->
-        <div class="cinema-stage-wrapper" id="cinema-stage">
-          
-          <!-- CANVAS RENDERER FOR FRAME SCRUBBING -->
-          <div class="stage-canvas-layer" id="canvas-stage-layer">
-            <canvas id="cinema-canvas" width="1280" height="720"></canvas>
-            <div id="canvas-loader" class="canvas-loader">
-              <div class="spinner"></div>
-              <span id="canvas-loader-text">INITIALIZING TELEMETRY FRAMES (0%)</span>
-            </div>
-          </div>
-
-          <!-- VIDEO PLAYER LAYER FOR FILM MODE -->
-          <div class="stage-video-layer" id="video-stage-layer" style="display:none;">
-            <video id="cinema-video" playsinline preload="metadata">
-              <source id="cinema-video-source" src="clip 1.mp4" type="video/mp4" />
-              Your browser does not support HTML5 video.
-            </video>
-            <div class="video-overlay-play" id="video-play-overlay">
-              <button class="video-big-play-btn" id="big-play-btn">
-                <svg viewBox="0 0 24 24" width="40" height="40" fill="currentColor">
-                  <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- HUD TELEMETRY OVERLAY -->
-          <div class="stage-hud-overlay">
-            <div class="hud-top">
-              <div class="hud-item hud-code">
-                <span class="hud-label">FRAME SEQ</span>
-                <span class="hud-val" id="hud-frame-num">FRM: 001 / 200</span>
-              </div>
-              <div class="hud-item hud-lights">
-                <span class="hud-label">LIGHT SIGNATURE</span>
-                <span class="hud-status-chip chip-front">FRONT 6500K [COOL WHITE]</span>
-                <span class="hud-status-chip chip-rear">REAR 620NM [DEEP RED]</span>
-              </div>
-              <div class="hud-item hud-lens">
-                <span class="hud-label">OPTICS</span>
-                <span class="hud-val">50MM ANAMORPHIC • T1.5</span>
-              </div>
-            </div>
-
-            <div class="hud-bottom">
-              <div class="hud-chapter-card" id="hud-chapter-info">
-                <div class="ch-badge">CHAPTER 01 // KEYFRAME K1</div>
-                <h3 class="ch-card-title">THE WAKE</h3>
-                <p class="ch-card-quote">
-                  "Low camera height at bumper level, 4m back. Wet empty asphalt at the edge of a vast dark city in total blackout. The only light comes from the glowing red rear bar and white headlight beams spilling into fog."
-                </p>
-                <div class="ch-specs-row">
-                  <span class="spec-pill">SPEED: 0 KM/H</span>
-                  <span class="spec-pill">TORQUE: STANDBY</span>
-                  <span class="spec-pill">AMBIENT: 0.0 LUX</span>
-                  <span class="spec-pill">SURFACE: WET ASPHALT</span>
-                </div>
-              </div>
-
-              <!-- SCRUBBER CONTROL DOCK -->
-              <div class="hud-scrubber-dock">
-                <div class="scrub-controls-row">
-                  <button id="scrub-prev-btn" class="hud-btn" title="Previous Keyframe">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5" stroke="currentColor" stroke-width="2"/></svg>
-                  </button>
-                  <button id="scrub-play-btn" class="hud-btn hud-play-toggle" title="Play/Pause">
-                    <svg class="icon-play" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-                    <svg class="icon-pause" viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="display:none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
-                  </button>
-                  <button id="scrub-next-btn" class="hud-btn" title="Next Keyframe">
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2"/></svg>
-                  </button>
-                  
-                  <div class="slider-wrapper">
-                    <input type="range" id="frame-range-slider" min="0" max="199" value="0" step="1" />
-                    <div class="slider-track-glow" id="slider-glow"></div>
-                  </div>
-
-                  <span class="scrub-progress-text" id="scrub-percent">0.0%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- KEYFRAME THUMBNAIL STRIP -->
-        <div class="keyframe-filmstrip">
-          <div class="strip-legend">KEYFRAME ANCHORS (ChatGPT Generative Prompts):</div>
-          <div class="strip-cards-grid">
-            <div class="keyframe-card active" data-kf="k1" data-ch="1">
-              <div class="card-thumb-wrapper">
-                <img src="k1.png" alt="K1 - The Wake" loading="lazy" />
-                <span class="kf-badge">K1</span>
-              </div>
-              <div class="card-info">
-                <strong>THE WAKE</strong>
-                <span>Low rear motionless • Headlight spill into fog</span>
-              </div>
-            </div>
-
-            <div class="keyframe-card" data-kf="k2" data-ch="2">
-              <div class="card-thumb-wrapper">
-                <img src="k22.jpg" alt="K2 - The Departure" loading="lazy" />
-                <span class="kf-badge">K2</span>
-              </div>
-              <div class="card-info">
-                <strong>THE DEPARTURE</strong>
-                <span>15m ahead • Rolling down wide avenue</span>
-              </div>
-            </div>
-
-            <div class="keyframe-card" data-kf="k3" data-ch="3">
-              <div class="card-thumb-wrapper">
-                <img src="k3.png" alt="K3 - The Corridor" loading="lazy" />
-                <span class="kf-badge">K3</span>
-              </div>
-              <div class="card-info">
-                <strong>THE CORRIDOR</strong>
-                <span>Rear 3/4 low angle • Canyon of glass towers</span>
-              </div>
-            </div>
-
-            <div class="keyframe-card" data-kf="k4" data-ch="4">
-              <div class="card-thumb-wrapper">
-                <img src="k4.png" alt="K4 - The Overlook" loading="lazy" />
-                <span class="kf-badge">K4</span>
-              </div>
-              <div class="card-info">
-                <strong>THE OVERLOOK</strong>
-                <span>Pure side profile • Elevated bridge skyline</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECTION 2: EXPLODED TECHNICAL VIEW (DECONSTRUCTION STUDIO) -->
-    <section id="deconstruction" class="exploded-section">
-      <div class="container">
-        
-        <div class="section-header-centered">
-          <div class="section-tag red-tag">ENGINEERING INTEGRATION // E1 → E2</div>
-          <h2 class="section-title">DECONSTRUCTED ARCHITECTURE</h2>
-          <p class="section-lead">
-            Slow, surgical separation along precision engineering axes. Roof and glass lift upward; doors slide outward; battery pack lowers beneath the floor, exposing dual high-output motors and floating suspension geometry.
-          </p>
-        </div>
-
-        <!-- EXPLODED INTERACTIVE STAGE -->
-        <div class="exploded-stage-box">
-          
-          <!-- EXPLODED VIEW SWITCHER -->
-          <div class="exploded-view-controls">
-            <div class="btn-group">
-              <button class="exp-tab-btn active" id="exp-tab-scrub">
-                <span>4D DISASSEMBLY SCRUBBER</span>
-              </button>
-              <button class="exp-tab-btn" id="exp-tab-split">
-                <span>BEFORE / AFTER CURTAIN</span>
-              </button>
-            </div>
-            
-            <div class="separation-meter">
-              <span class="meter-label">EXPANSION OFFSET:</span>
-              <span class="meter-val" id="separation-val">0% (ASSEMBLED)</span>
-            </div>
-          </div>
-
-          <!-- STAGE CONTAINER -->
-          <div class="exploded-display-stage" id="exploded-stage">
-            
-            <!-- VIEW A: 200 FRAME CANVAS / VIDEO SCRUBBER -->
-            <div class="exp-canvas-wrapper" id="exp-scrub-view">
-              <canvas id="exploded-canvas" width="1280" height="720"></canvas>
-              
-              <!-- HOTSPOTS OVERLAY -->
-              <div class="hotspots-layer" id="hotspots-layer">
-                <div class="hotspot-pin" style="top: 28%; left: 48%;" data-part="aero-roof">
-                  <span class="pin-pulse"></span>
-                  <span class="pin-id">01</span>
-                  <div class="pin-popover">
-                    <span class="pop-title">AERO CARBON CANOPY</span>
-                    <span class="pop-desc">Flush electrochromic glass seamlessly bonded to structural carbon weave. Lifts 380mm in technical service mode.</span>
-                  </div>
-                </div>
-
-                <div class="hotspot-pin" style="top: 48%; left: 24%;" data-part="front-fascia">
-                  <span class="pin-pulse"></span>
-                  <span class="pin-id">02</span>
-                  <div class="pin-popover">
-                    <span class="pop-title">OPTICAL WAVEGUIDE LIGHTBAR</span>
-                    <span class="pop-desc">Ultra-thin 6500K cool white continuous laser LED bar with integrated forward LiDAR & active cooling channels.</span>
-                  </div>
-                </div>
-
-                <div class="hotspot-pin" style="top: 72%; left: 52%;" data-part="solid-battery">
-                  <span class="pin-pulse"></span>
-                  <span class="pin-id">03</span>
-                  <div class="pin-popover">
-                    <span class="pop-title">120 KWH SOLID-STATE SKATEBOARD</span>
-                    <span class="pop-desc">Cell-to-pack structural floor. 800V SiC architecture delivering 780 km range with 9-minute 10–80% replenishment.</span>
-                  </div>
-                </div>
-
-                <div class="hotspot-pin" style="top: 60%; left: 74%;" data-part="rear-motor">
-                  <span class="pin-pulse"></span>
-                  <span class="pin-id">04</span>
-                  <div class="pin-popover">
-                    <span class="pop-title">DUAL PMSM AXLE VECTORING</span>
-                    <span class="pop-desc">1,120 kW total output (1,500 HP). Sub-millisecond independent wheel torque distribution.</span>
-                  </div>
-                </div>
-
-                <div class="hotspot-pin" style="top: 68%; left: 32%;" data-part="aero-wheels">
-                  <span class="pin-pulse"></span>
-                  <span class="pin-id">05</span>
-                  <div class="pin-popover">
-                    <span class="pop-title">21" AERO FORGED TURBINES</span>
-                    <span class="pop-desc">Directional thin carbon spokes engineered to evacuate caliper heat while reducing turbulent wheel well drag.</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- EXPLODED SCRUB SLIDER -->
-              <div class="exp-scrubber-bar">
-                <span class="exp-scrub-label">ASSEMBLED (E1)</span>
-                <input type="range" id="exp-range-slider" min="0" max="199" value="0" step="1" />
-                <span class="exp-scrub-label">EXPLODED (E2)</span>
-              </div>
-            </div>
-
-            <!-- VIEW B: SPLIT CURTAIN COMPARISON (E1 ASSEMBLED VS E2 EXPLODED) -->
-            <div class="exp-split-wrapper" id="exp-split-view" style="display:none;">
-              <div class="split-image-container">
-                <img src="e2.png" alt="E2 Exploded" class="split-img-base" />
-                <div class="split-img-overlay" id="split-overlay">
-                  <img src="e1.png" alt="E1 Assembled" class="split-img-top" />
-                </div>
-                <div class="split-divider-line" id="split-divider">
-                  <div class="divider-handle">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="15 18 9 12 15 6"/>
-                    </svg>
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                  </div>
-                </div>
-              </div>
-              <div class="split-legend-row">
-                <span>← DRAG CURTAIN TO COMPARE FULL INTEGRATION (E1) AND SUB-ASSEMBLIES (E2) →</span>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- COMPONENT HIGHLIGHT CARDS -->
-          <div class="engineering-specs-grid">
-            <div class="eng-card">
-              <span class="eng-idx">SYS // 01</span>
-              <h4>STRUCTURAL MONOCOQUE</h4>
-              <p>Carbon-titanium weave finished in matte graphite. Ultra-high torsional rigidity with zero visible seams, handles, or badges.</p>
-            </div>
-            <div class="eng-card">
-              <span class="eng-idx">SYS // 02</span>
-              <h4>800V SOLID STATE PACK</h4>
-              <p>Under-floor sealed skateboard pack. Energy density exceeding 450 Wh/kg with intelligent liquid-phase thermal conditioning.</p>
-            </div>
-            <div class="eng-card">
-              <span class="eng-idx">SYS // 03</span>
-              <h4>DUAL AXLE DRIVETRAIN</h4>
-              <p>Dual permanent magnet synchronous motors revving to 22,000 RPM. Integrated silicon carbide inverters and planetary gearsets.</p>
-            </div>
-            <div class="eng-card">
-              <span class="eng-idx">SYS // 04</span>
-              <h4>ACTIVE AERO MATRIX</h4>
-              <p>Underbody Venturi tunnels, flush active diffuser, and 21" aero directional wheels generating negative lift at 340 km/h.</p>
-            </div>
-          </div>
-
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECTION 3: MASTER DESIGN REFERENCE STUDIO (STEP 0 LOCK) -->
-    <section id="design-lock" class="design-lock-section">
-      <div class="container">
-        
-        <div class="studio-header">
-          <div class="studio-meta">
-            <span class="section-tag">STEP 0 // MASTER DESIGN LOCK</span>
-            <h2 class="section-title">THE AUTOMOTIVE REFERENCE SHEET</h2>
-            <p class="section-lead">
-              The fundamental genetic code of NOCTIS. Generated in pure near-black studio (#07080A) with soft top light and rim lights tracing every muscular fastback contour.
-            </p>
-          </div>
-          
-          <div class="studio-badge-box">
-            <span class="badge-title">DESIGN LOCK CRITERIA</span>
-            <ul class="badge-list">
-              <li>✓ Unbadged & unbranded purity</li>
-              <li>✓ Matte graphite grey finish (#222428)</li>
-              <li>✓ Ultra-thin 6500K front lightbar</li>
-              <li>✓ Ultra-thin 620nm rear lightbar</li>
-              <li>✓ 21-inch aero wheels with thin spokes</li>
-              <li>✓ Flush glass & flush actuators</li>
-            </ul>
-          </div>
-        </div>
-
-        <!-- MASTER SHEET INTERACTIVE VIEWER -->
-        <div class="master-sheet-display">
-          <div class="sheet-image-frame" id="sheet-frame">
-            <img src="carr imageeeeee.png" alt="NOCTIS Master Design Reference Sheet" id="master-sheet-img" />
-            
-            <div class="sheet-callout callout-side">
-              <span class="callout-line"></span>
-              <div class="callout-label">
-                <strong>CLEAN SIDE PROFILE</strong>
-                <span>Long hood, smooth fastback roofline, flush door handles</span>
-              </div>
-            </div>
-
-            <div class="sheet-callout callout-rear">
-              <span class="callout-line"></span>
-              <div class="callout-label">
-                <strong>REAR THREE-QUARTER VIEW</strong>
-                <span>Continuous thin red light bar (#FF2244), wide stance, aero diffuser</span>
-              </div>
-            </div>
-
-            <!-- LIGHTING SIMULATION OVERLAY -->
-            <div class="lighting-overlay" id="lighting-overlay"></div>
-          </div>
-
-          <!-- STUDIO LIGHTING CONTROLS -->
-          <div class="studio-toolbar">
-            <div class="toolbar-title">STUDIO LIGHTING SIMULATOR:</div>
-            <div class="toolbar-btns">
-              <button class="studio-btn active" data-light="default">STUDIO SOFT</button>
-              <button class="studio-btn" data-light="rim">RIM LIGHT EMPHASIS</button>
-              <button class="studio-btn" data-light="lasers">LIGHTBARS ONLY</button>
-              <button class="studio-btn" data-light="monochrome">HIGH CONTRAST</button>
-            </div>
-            <div class="toolbar-status">STUDIO BG: #07080A REFLECTIVE FLOOR</div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- SECTION 4: FULL TELEMETRY SPECIFICATIONS -->
-    <section id="telemetry" class="telemetry-section">
-      <div class="container">
-        
-        <div class="section-header-centered">
-          <div class="section-tag">TELEMETRY & DYNAMICS</div>
-          <h2 class="section-title">ENGINEERING SPECIFICATIONS</h2>
-          <p class="section-lead">Calibrated for uninterrupted continental touring and apex cornering stability.</p>
-        </div>
-
-        <div class="specs-table-wrapper">
-          <div class="specs-category">
-            <h3 class="category-heading">POWERTRAIN & BATTERY</h3>
-            <div class="spec-row">
-              <span class="spec-name">Motor Architecture</span>
-              <span class="spec-detail">Dual Permanent Magnet Synchronous Motors (PMSM)</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Combined Power Output</span>
-              <span class="spec-detail">1,120 kW (1,500 hp / 1,521 PS)</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">System Torque</span>
-              <span class="spec-detail">1,400 Nm (1,032 lb-ft) from 0 RPM</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Battery Chemistry</span>
-              <span class="spec-detail">120 kWh Solid-State with Silicon-Carbide Inverter</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">DC Charging Velocity</span>
-              <span class="spec-detail">350 kW (10% to 80% SOC in 9.2 minutes)</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">WLTP Range</span>
-              <span class="spec-detail">780 km (485 miles)</span>
-            </div>
-          </div>
-
-          <div class="specs-category">
-            <h3 class="category-heading">DYNAMICS & CHASSIS</h3>
-            <div class="spec-row">
-              <span class="spec-name">Acceleration (0–100 km/h)</span>
-              <span class="spec-detail">1.98 seconds</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Acceleration (0–200 km/h)</span>
-              <span class="spec-detail">4.82 seconds</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Top Speed</span>
-              <span class="spec-detail">340 km/h (211 mph, electronically limited)</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Drag Coefficient</span>
-              <span class="spec-detail">0.19 Cd</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Braking System</span>
-              <span class="spec-detail">420mm Carbon-Ceramic Discs with 10-Piston Monobloc Calipers</span>
-            </div>
-            <div class="spec-row">
-              <span class="spec-name">Wheels & Tires</span>
-              <span class="spec-detail">21" Forged Aero Turbines with 285/30 ZR21 (F), 325/25 ZR21 (R)</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- PROMPT DOCUMENTATION & ARTIFACT DRAWER -->
-    <section class="prompt-docs-section">
-      <div class="container">
-        <div class="docs-box">
-          <div class="docs-header">
-            <div>
-              <span class="section-tag red-tag">DEVELOPER ARTIFACT</span>
-              <h3>NOCTIS INTEGRATOR BUILD SPECIFICATION</h3>
-              <p>Generated by Google Antigravity to orchestrate full-stack generative assets.</p>
-            </div>
-            <button id="copy-prompt-btn" class="ctrl-btn">
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-              </svg>
-              <span>COPY BUILD PROMPT</span>
-            </button>
-          </div>
-          <div class="docs-body">
-            <p>
-              The complete master Integrator Build Prompt has been compiled and saved to <a href="file:///c:/Users/mahit/Desktop/car,,wesite/INTEGRATOR_PROMPT.md"><code>INTEGRATOR_PROMPT.md</code></a>. It documents the end-to-end generative AI pipeline from base car lock to keyframes, flow video interpolation, frame scrubbing extraction, and client-side reactive rendering.
-            </p>
-          </div>
-        </div>
+        <button id="reserve-btn" class="reserve-button" data-cursor="RESERVE">
+          <span class="btn-tick"></span>
+          <span class="btn-text">RESERVE YOUR NOCTIS</span>
+        </button>
       </div>
     </section>
 
@@ -619,74 +450,41 @@
 
   <!-- FOOTER -->
   <footer class="site-footer">
-    <div class="container footer-inner">
-      <div class="footer-col">
-        <div class="brand-logo">N O C T I S</div>
-        <p class="footer-desc">Fictional unbadged electric grand tourer coupe in matte graphite grey. All generative media synthesized via ChatGPT, Google Flow, and Google Antigravity.</p>
-      </div>
-      <div class="footer-col footer-links-col">
-        <span class="col-title">KEYFRAME NODES</span>
-        <a href="#hero-experience" class="footer-link">K1 — The Wake</a>
-        <a href="#hero-experience" class="footer-link">K2 — The Departure</a>
-        <a href="#hero-experience" class="footer-link">K3 — The Corridor</a>
-        <a href="#hero-experience" class="footer-link">K4 — The Overlook</a>
-      </div>
-      <div class="footer-col footer-links-col">
-        <span class="col-title">DECONSTRUCTION</span>
-        <a href="#deconstruction" class="footer-link">E1 — Assembled View</a>
-        <a href="#deconstruction" class="footer-link">E2 — Exploded View</a>
-        <a href="#deconstruction" class="footer-link">Flow Clip Sequence</a>
-        <a href="#design-lock" class="footer-link">Step 0 Design Lock</a>
-      </div>
-      <div class="footer-col footer-status-col">
-        <span class="col-title">WORKSPACE TELEMETRY</span>
-        <div class="status-metric">SYSTEM: <span>ANTIGRAVITY ACTIVE</span></div>
-        <div class="status-metric">MEDIA: <span>4 CLIPS • 800 FRAMES</span></div>
-        <div class="status-metric">LOCATION: <span>BLACKOUT METROPOLIS</span></div>
+    <div class="footer-top">
+      <div class="footer-brand">NOCTIS</div>
+      <div class="footer-links-grid">
+        <div class="footer-col">
+          <span class="footer-col-title">MODELS</span>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">GT-E</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">S</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">X</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">R</a>
+          <a href="#lineup" class="footer-link" data-cursor="VIEW">ONE</a>
+        </div>
+        <div class="footer-col">
+          <span class="footer-col-title">TECHNOLOGY</span>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">Carbon Monocoque</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">Axial-Flux Motors</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">Solid-State Pack</a>
+          <a href="#dismantle" class="footer-link" data-cursor="VIEW">Laser Signatures</a>
+        </div>
+        <div class="footer-col">
+          <span class="footer-col-title">COMPANY</span>
+          <a href="#statement" class="footer-link" data-cursor="VIEW">Engineering</a>
+          <a href="#reserve" class="footer-link" data-cursor="RESERVE">Allocation</a>
+          <a href="#" class="footer-link" data-cursor="VIEW">Press Kit</a>
+          <a href="#" class="footer-link" data-cursor="VIEW">Legal</a>
+        </div>
       </div>
     </div>
-    <div class="footer-bottom-bar">
-      <div class="container bottom-bar-inner">
-        <span>© 2026 NOCTIS AUTOMOTIVE DESIGN LABS. UNBADGED LUXURY GT.</span>
-        <span>STUDIO REFERENCE: #07080A • DUAL LASER LIGHT SIGNATURE</span>
-      </div>
+    <div class="footer-bottom">
+      <span class="footer-copy">© 2026 NOCTIS. ALL RIGHTS RESERVED. (FICTIONAL BRAND).</span>
+      <span class="footer-meta">ASPHALT #07080A · SINGLE LINE OF LIGHT</span>
     </div>
   </footer>
 
-  <!-- ALLOCATION MODAL -->
-  <div id="allocation-modal" class="modal-backdrop" style="display:none;">
-    <div class="modal-card">
-      <button class="modal-close-btn" id="modal-close-btn">&times;</button>
-      <div class="modal-header">
-        <div class="section-tag red-tag">PRIVATE COMMISSION</div>
-        <h3 class="modal-title">NOCTIS COMMISSION PORTAL</h3>
-        <p class="modal-sub">Inquire regarding bespoke builds of the unbadged electric grand tourer.</p>
-      </div>
-      <form id="inquiry-form" class="modal-form" onsubmit="event.preventDefault(); alert('Inquiry recorded. The NOCTIS concierge will contact your secure channel.'); document.getElementById('allocation-modal').style.display='none';">
-        <div class="form-group">
-          <label>NAME / CALLSIGN</label>
-          <input type="text" placeholder="e.g. Commander M." required />
-        </div>
-        <div class="form-group">
-          <label>SECURE ENCRYPTED CONTACT</label>
-          <input type="email" placeholder="contact@domain.com" required />
-        </div>
-        <div class="form-group">
-          <label>SPECIFICATION PREFERENCE</label>
-          <select>
-            <option>Matte Graphite Grey (Master Lock #07080A)</option>
-            <option>Satin Obsidian Black</option>
-            <option>Raw Exposed Carbon Monocoque</option>
-          </select>
-        </div>
-        <button type="submit" class="action-btn-primary full-width">
-          <span>TRANSMIT ALLOCATION INQUIRY</span>
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <script src="app.js"></script>
+  <!-- CONFIG & MAIN SCRIPTS -->
+  <script src="config.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
-
